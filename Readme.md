@@ -1,7 +1,8 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Александр Лесухин](https://up.htmlacademy.ru/javascript/12/user/181931).
-* Наставник: `Неизвестно`.
+* Наставник: [Владислав Балабанович]
+(https://htmlacademy.ru/profile/balabanovich).
 
 ---
 
