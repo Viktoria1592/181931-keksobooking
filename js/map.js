@@ -1,4 +1,5 @@
 'use strict';
+
 var AVATAR_URL = 'img/avatars/user0';
 var AVATAR_TYPE = '.png';
 var HOUSE_QUANTITY = 8;
@@ -41,15 +42,16 @@ var roomType = function (russianRoomType) {
 };
 
 /**
- * Функция генерации одного объекта
- * @return {object} Объект
+ * [[Description]]
+ * @param   {number} step [[Description]]
+ * @return {object} [[Description]]
  */
-var createHouse = function () {
+var createHouse = function (step) {
   var locationX = getRandomNumber(300, 900);
   var locationY = getRandomNumber(150, 500);
   var house = {
     author: {
-      avatar: AVATAR_URL + getRandomNumber(1, 8) + AVATAR_TYPE
+      avatar: AVATAR_URL + (step + 1) + AVATAR_TYPE
     },
     offer: {
       title: getRandomItem(HOUSE_TITLE),
@@ -60,9 +62,9 @@ var createHouse = function () {
       guests: getRandomNumber(1, 3),
       checkin: getRandomItem(HOUSE_CHECHIN),
       checkout: getRandomItem(HOUSE_CHECHOUT),
-      features: getRandomItem(HOUSE_FEATURES),
+      features: HOUSE_FEATURES.slice(0, getRandomNumber(0, HOUSE_FEATURES.length)),
       description: '',
-      photos: getRandomItem(HOUSE_PHOTOS)
+      photos: HOUSE_PHOTOS
     },
     location: {
       x: locationX,
@@ -74,7 +76,7 @@ var createHouse = function () {
 
 var houseArr = [];
 for (var i = 0; i < HOUSE_QUANTITY; i++) {
-  houseArr.push(createHouse());
+  houseArr.push(createHouse(i));
 }
 
 var activateMap = document.querySelector('.map');
@@ -109,7 +111,6 @@ var createPopUp = function (house) {
   var map = document.querySelector('.map');
   var mapFilters = document.querySelector('.map__filters-container');
   var PopUpTemplate = document.querySelector('template').content;
-
   var PopUpElement = PopUpTemplate.cloneNode(true);
 
   PopUpElement.querySelector('h3').textContent = house.offer.title;
@@ -123,16 +124,16 @@ var createPopUp = function (house) {
 
   var features = PopUpElement.querySelector('.popup__features');
   features.innerHTML = '';
-  for (i = 0; i < HOUSE_FEATURES.length; i++) {
+  for (i = 0; i < house.offer.features.length; i++) {
     var featureLi = document.createElement('li');
-    featureLi.className = 'feature feature--' + house.offer.features;
+    featureLi.className = 'feature feature--' + house.offer.features[i];
     features.appendChild(featureLi);
   }
 
   var pictures = PopUpElement.querySelector('.popup__pictures');
-  for (i = 0; i < HOUSE_PHOTOS.length; i++) {
+  for (i = 0; i < house.offer.photos.length; i++) {
     var photoLi = document.createElement('li');
-    photoLi.innerHTML = '<img src="' + house.offer.photos + '" width="65" height="65">';
+    photoLi.innerHTML = '<img src="' + house.offer.photos[i] + '" width="65" height="65">';
     pictures.appendChild(photoLi);
   }
 
