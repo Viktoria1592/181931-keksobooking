@@ -42,13 +42,29 @@ var roomType = function (russianRoomType) {
 };
 
 /**
- * [[Description]]
- * @param   {number} step [[Description]]
- * @return {object} [[Description]]
+ * Функция перемешивания массива
+ * @param   {Array} array
+ * @return {Array}
+ */
+var shuffleArray = function (array) {
+  for (var i = array.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+  }
+  return array;
+};
+
+/**
+ * Функция создания одного объекта
+ * @param   {number} step
+ * @return {object}
  */
 var createHouse = function (step) {
   var locationX = getRandomNumber(300, 900);
   var locationY = getRandomNumber(150, 500);
+  var newArrOfFeatures = HOUSE_FEATURES.slice(0, getRandomNumber(0, HOUSE_FEATURES.length));
   var house = {
     author: {
       avatar: AVATAR_URL + (step + 1) + AVATAR_TYPE
@@ -62,9 +78,9 @@ var createHouse = function (step) {
       guests: getRandomNumber(1, 3),
       checkin: getRandomItem(HOUSE_CHECHIN),
       checkout: getRandomItem(HOUSE_CHECHOUT),
-      features: HOUSE_FEATURES.slice(0, getRandomNumber(0, HOUSE_FEATURES.length)),
+      features: newArrOfFeatures,
       description: '',
-      photos: HOUSE_PHOTOS
+      photos: shuffleArray(HOUSE_PHOTOS)
     },
     location: {
       x: locationX,
@@ -110,19 +126,19 @@ createButtons();
 var createPopUp = function (house) {
   var map = document.querySelector('.map');
   var mapFilters = document.querySelector('.map__filters-container');
-  var PopUpTemplate = document.querySelector('template').content;
-  var PopUpElement = PopUpTemplate.cloneNode(true);
+  var popUpTemplate = document.querySelector('template').content;
+  var popUpElement = popUpTemplate.cloneNode(true);
 
-  PopUpElement.querySelector('h3').textContent = house.offer.title;
-  PopUpElement.querySelector('p small').textContent = house.offer.address;
-  PopUpElement.querySelector('.popup__price').innerHTML = house.offer.price + ' &#x20bd;' + ' /ночь';
-  PopUpElement.querySelector('h4').textContent = roomType(house.offer.type);
-  PopUpElement.querySelectorAll('h4 + p').textContent = house.offer.rooms + ' комнаты для ' + house.offer.guests + ' гостей';
-  PopUpElement.querySelectorAll('p + p').textContent = 'Заезд после ' + house.offer.checkin + ', выезд до ' + house.offer.checkout;
-  PopUpElement.querySelectorAll('p')[4].textContent = house.description;
-  PopUpElement.querySelector('.popup__avatar').src = house.author.avatar;
+  popUpElement.querySelector('h3').textContent = house.offer.title;
+  popUpElement.querySelector('p small').textContent = house.offer.address;
+  popUpElement.querySelector('.popup__price').innerHTML = house.offer.price + ' &#x20bd;' + ' /ночь';
+  popUpElement.querySelector('h4').textContent = roomType(house.offer.type);
+  popUpElement.querySelectorAll('h4 + p').textContent = house.offer.rooms + ' комнаты для ' + house.offer.guests + ' гостей';
+  popUpElement.querySelectorAll('p + p').textContent = 'Заезд после ' + house.offer.checkin + ', выезд до ' + house.offer.checkout;
+  popUpElement.querySelectorAll('p')[4].textContent = house.description;
+  popUpElement.querySelector('.popup__avatar').src = house.author.avatar;
 
-  var features = PopUpElement.querySelector('.popup__features');
+  var features = popUpElement.querySelector('.popup__features');
   features.innerHTML = '';
   for (i = 0; i < house.offer.features.length; i++) {
     var featureLi = document.createElement('li');
@@ -130,14 +146,14 @@ var createPopUp = function (house) {
     features.appendChild(featureLi);
   }
 
-  var pictures = PopUpElement.querySelector('.popup__pictures');
+  var pictures = popUpElement.querySelector('.popup__pictures');
   for (i = 0; i < house.offer.photos.length; i++) {
     var photoLi = document.createElement('li');
     photoLi.innerHTML = '<img src="' + house.offer.photos[i] + '" width="65" height="65">';
     pictures.appendChild(photoLi);
   }
 
-  map.insertBefore(PopUpElement, mapFilters);
+  map.insertBefore(popUpElement, mapFilters);
 };
 
 createPopUp(houseArr[0]);
