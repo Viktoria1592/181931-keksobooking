@@ -50,6 +50,24 @@ var roomType = function (russianRoomType) {
 };
 
 /**
+ * Функция получения координат главной метки
+ * @return {number} координаты x, y
+ */
+var getMainPinCoordinates = function () {
+  var x = mainPin.offsetLeft - MAIN_BUTTON_WIDTH / 2;
+  var y = mainPin.offsetTop + MAIN_BUTTON_HEIGHT;
+
+  return x + ', ' + y;
+};
+
+/**
+ * Функция добавления координат главной точки в поле адрес
+ */
+var setAddress = function () {
+  noticeForm.querySelector('#address').value = getMainPinCoordinates();
+};
+
+/**
  * Функция перемешивания массива
  * @param   {Array} array
  * @return {Array}
@@ -103,6 +121,15 @@ for (var i = 0; i < HOUSE_QUANTITY; i++) {
   houseArr.push(createHouse(i));
 }
 
+var openPopUp = function () {
+  var mapPin = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+  mapPin.addEventListener('click', function () {
+    for (i = 0; i < HOUSE_QUANTITY.length; i++) {
+      createPopUp(houseArr[i]);
+    }
+  });
+};
+
 /**
  * Функция активации карты
  */
@@ -113,6 +140,7 @@ var activateMap = function () {
     createButtons();
     removeFormDisabled();
     setAddress();
+    openPopUp();
   });
 };
 activateMap();
@@ -189,32 +217,4 @@ var createPopUp = function (house) {
   }
 
   map.insertBefore(popUpElement, mapFilters);
-};
-
-var openPopUp = function () {
-  var mapPin = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-  mapPin.addEventListener('click', function () {
-    for (i = 0; i < HOUSE_QUANTITY.length; i++) {
-      createPopUp(houseArr[i]);
-    }
-  });
-};
-openPopUp();
-
-/**
- * Функция получения координат главной метки
- * @return {number} координаты x, y
- */
-var getMainPinCoordinates = function () {
-  var x = mainPin.offsetLeft - MAIN_BUTTON_WIDTH / 2;
-  var y = mainPin.offsetTop + MAIN_BUTTON_HEIGHT;
-
-  return x + ', ' + y;
-};
-
-/**
- * Функция добавления координат главной точки в поле адрес
- */
-var setAddress = function () {
-  noticeForm.querySelector('#address').value = getMainPinCoordinates();
 };
