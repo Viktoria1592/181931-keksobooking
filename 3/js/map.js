@@ -123,11 +123,13 @@ for (var i = 0; i < HOUSE_QUANTITY; i++) {
 
 var openPopUp = function () {
   var mapPin = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-  mapPin.addEventListener('click', function () {
-    for (i = 0; i < HOUSE_QUANTITY.length; i++) {
-      createPopUp(houseArr[i]);
-    }
-  });
+  for (i = 0; i < mapPin.length; i++) {
+    mapPin[i].addEventListener('click', function () {
+      for (i = 0; i < HOUSE_QUANTITY.length; i++) {
+        createPopUp(houseArr[i]);
+      }
+    });
+  }
 };
 
 /**
@@ -218,3 +220,4 @@ var createPopUp = function (house) {
 
   map.insertBefore(popUpElement, mapFilters);
 };
+
