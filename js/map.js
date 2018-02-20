@@ -11,12 +11,20 @@ var HOUSE_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'co
 var HOUSE_PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
 var BUTTON_WIDTH = 50;
 var BUTTON_HEIGHT = 70;
+var MAIN_BUTTON_WIDTH = 65;
+var MAIN_BUTTON_HEIGHT = 87;
+
+var map = document.querySelector('.map');
+var mainPin = document.querySelector('.map__pin--main');
+var noticeForm = document.querySelector('.notice__form');
+noticeForm.setAttribute('action', 'https://js.dump.academy/keksobooking');
+var fieldets = document.querySelectorAll('.form__element');
 
 /**
  * Функция генерации случайного числа
  * @param   {number} min Минимальное значение
  * @param   {number} max Максимальное знаение
- * @return {number} [[Description]]
+ * @return {number} возвращает число
  */
 var getRandomNumber = function (min, max) {
   return Math.round(Math.random() * (max - min) + min);
@@ -39,6 +47,24 @@ var roomType = function (russianRoomType) {
   };
 
   return roomTypes[russianRoomType];
+};
+
+/**
+ * Функция получения координат главной метки
+ * @return {number} координаты x, y
+ */
+var getMainPinCoordinates = function () {
+  var x = mainPin.offsetLeft - MAIN_BUTTON_WIDTH / 2;
+  var y = mainPin.offsetTop + MAIN_BUTTON_HEIGHT;
+
+  return x + ', ' + y;
+};
+
+/**
+ * Функция добавления координат главной точки в поле адрес
+ */
+var setAddress = function () {
+  noticeForm.querySelector('#address').value = getMainPinCoordinates();
 };
 
 /**
@@ -95,8 +121,39 @@ for (var i = 0; i < HOUSE_QUANTITY; i++) {
   houseArr.push(createHouse(i));
 }
 
-var activateMap = document.querySelector('.map');
-activateMap.classList.remove('map--faded');
+/**
+ * Функция активации карты
+ */
+var activateMap = function () {
+  mainPin.addEventListener('mouseup', function () {
+    map.classList.remove('map--faded');
+    noticeForm.classList.remove('notice__form--disabled');
+    createButtons();
+    removeFormDisabled();
+    setAddress();
+    openPopUp();
+  });
+};
+activateMap();
+
+/**
+ * Функция добавления атрибута disabled у формы
+ */
+var addFormDisabled = function () {
+  for (i = 0; i < fieldets.length; i++) {
+    fieldets[i].disabled = true;
+  }
+};
+addFormDisabled();
+
+/**
+ * Функция удаления атрибута disabled у формы
+ */
+var removeFormDisabled = function () {
+  for (i = 0; i < fieldets.length; i++) {
+    fieldets[i].disabled = false;
+  }
+};
 
 /**
  * Функция создания DOM-элементов меткок на карте
@@ -104,10 +161,11 @@ activateMap.classList.remove('map--faded');
 var createButtons = function () {
   var mapPins = document.querySelector('.map__pins');
   var buttons = document.createDocumentFragment();
-  for (i = 0; i < 8; i++) {
+  for (i = 0; i < HOUSE_QUANTITY; i++) {
     var positionX = houseArr[i].location.x + BUTTON_WIDTH / 2;
     var positionY = houseArr[i].location.y + BUTTON_HEIGHT / 2;
     var button = document.createElement('button');
+    button.setAttribute('data-id', i);
     button.className = 'map__pin';
     button.style = 'left: ' + positionX + 'px; top: ' + positionY + 'px;';
     button.innerHTML = '<img src=' + houseArr[i].author.avatar + ' width="40" height="40" draggable="false">';
@@ -117,14 +175,11 @@ var createButtons = function () {
   mapPins.appendChild(buttons);
 };
 
-createButtons();
-
 /**
  * Функция создания PopUp окна с предложением на карте
- * @param {object} house [[Description]]
+ * @param {object} house
  */
 var createPopUp = function (house) {
-  var map = document.querySelector('.map');
   var mapFilters = document.querySelector('.map__filters-container');
   var popUpTemplate = document.querySelector('template').content;
   var popUpElement = popUpTemplate.cloneNode(true);
@@ -156,4 +211,22 @@ var createPopUp = function (house) {
   map.insertBefore(popUpElement, mapFilters);
 };
 
-createPopUp(houseArr[0]);
+/**
+ * Функция отрисовки Popup окна
+ * @param {object} evt
+ */
+var onPinClickhandler = function (evt) {
+  var target = evt.target;
+  var offerId = target.getAttribute('data-id');
+  createPopUp(houseArr[offerId]);
+};
+
+/**
+ * Функция отрисовки Popup окна по нажатию на метку
+ */
+var openPopUp = function () {
+  var mapPin = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+  for (i = 0; i < mapPin.length; i++) {
+    mapPin[i].addEventListener('click', onPinClickhandler);
+  }
+};
