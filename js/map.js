@@ -13,6 +13,7 @@ var BUTTON_WIDTH = 50;
 var BUTTON_HEIGHT = 70;
 var MAIN_BUTTON_WIDTH = 65;
 var MAIN_BUTTON_HEIGHT = 87;
+var ESC_KEYCODE = 27;
 
 var map = document.querySelector('.map');
 var mainPin = document.querySelector('.map__pin--main');
@@ -216,9 +217,10 @@ var createPopUp = function (house) {
  * @param {object} evt
  */
 var onPinClickhandler = function (evt) {
-  var target = evt.target;
+  var target = evt.currentTarget;
   var offerId = target.getAttribute('data-id');
   createPopUp(houseArr[offerId]);
+  document.querySelector('.popup__close').addEventListener('click', closePopUp);
 };
 
 /**
@@ -229,4 +231,12 @@ var openPopUp = function () {
   for (i = 0; i < mapPin.length; i++) {
     mapPin[i].addEventListener('click', onPinClickhandler);
   }
+};
+
+/**
+ * Функция закрытия popup окна при клике
+ */
+var closePopUp = function () {
+  var card = document.querySelector('.map__card');
+  map.removeChild(card);
 };
