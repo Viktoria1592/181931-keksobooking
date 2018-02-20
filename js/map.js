@@ -24,7 +24,7 @@ var fieldets = document.querySelectorAll('.form__element');
  * Функция генерации случайного числа
  * @param   {number} min Минимальное значение
  * @param   {number} max Максимальное знаение
- * @return {number} [[Description]]
+ * @return {number} возвращает число
  */
 var getRandomNumber = function (min, max) {
   return Math.round(Math.random() * (max - min) + min);
@@ -121,17 +121,6 @@ for (var i = 0; i < HOUSE_QUANTITY; i++) {
   houseArr.push(createHouse(i));
 }
 
-var openPopUp = function () {
-  var mapPin = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-  for (i = 0; i < mapPin.length; i++) {
-    mapPin[i].addEventListener('click', function () {
-      for (i = 0; i < HOUSE_QUANTITY.length; i++) {
-        createPopUp(houseArr[i]);
-      }
-    });
-  }
-};
-
 /**
  * Функция активации карты
  */
@@ -176,6 +165,7 @@ var createButtons = function () {
     var positionX = houseArr[i].location.x + BUTTON_WIDTH / 2;
     var positionY = houseArr[i].location.y + BUTTON_HEIGHT / 2;
     var button = document.createElement('button');
+    button.setAttribute('data-id', i);
     button.className = 'map__pin';
     button.style = 'left: ' + positionX + 'px; top: ' + positionY + 'px;';
     button.innerHTML = '<img src=' + houseArr[i].author.avatar + ' width="40" height="40" draggable="false">';
@@ -187,7 +177,7 @@ var createButtons = function () {
 
 /**
  * Функция создания PopUp окна с предложением на карте
- * @param {object} house [[Description]]
+ * @param {object} house
  */
 var createPopUp = function (house) {
   var mapFilters = document.querySelector('.map__filters-container');
@@ -221,3 +211,22 @@ var createPopUp = function (house) {
   map.insertBefore(popUpElement, mapFilters);
 };
 
+/**
+ * Функция отрисовки Popup окна
+ * @param {object} evt
+ */
+var onPinClickhandler = function (evt) {
+  var target = evt.target;
+  var offerId = target.getAttribute('data-id');
+  createPopUp(houseArr[offerId]);
+};
+
+/**
+ * Функция отрисовки Popup окна по нажатию на метку
+ */
+var openPopUp = function () {
+  var mapPin = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+  for (i = 0; i < mapPin.length; i++) {
+    mapPin[i].addEventListener('click', onPinClickhandler);
+  }
+};
