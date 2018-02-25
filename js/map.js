@@ -13,13 +13,15 @@ var BUTTON_WIDTH = 50;
 var BUTTON_HEIGHT = 70;
 var MAIN_BUTTON_WIDTH = 65;
 var MAIN_BUTTON_HEIGHT = 87;
+var MAIN_BUTTON_START_TOP = 375;
+var MAIN_BUTTON_START_LEFT = 50;
+var TOP_LIMIT = 150;
+var BOTTOM_LIMIT = 500;
 var ESC_KEYCODE = 27;
 
 var map = document.querySelector('.map');
 var mainPin = document.querySelector('.map__pin--main');
 var noticeForm = document.querySelector('.notice__form');
-noticeForm.setAttribute('action', 'https://js.dump.academy/keksobooking');
-var fieldets = document.querySelectorAll('.form__element');
 
 /**
  * Функция генерации случайного числа
@@ -44,11 +46,71 @@ var roomType = function (russianRoomType) {
   var roomTypes = {
     flat: 'Квартира',
     bungalo: 'Бунгало',
-    house: 'Дом',
+    house: 'Дом'
   };
 
   return roomTypes[russianRoomType];
 };
+
+/**
+ * Функция перетаскивания метки и активации карты
+ */
+
+var mainPinMouseUpHandler = function () {
+  map.classList.remove('map--faded');
+  noticeForm.classList.remove('notice__form--disabled');
+  createButtons();
+  removeFormDisabled();
+  setAddress();
+  openPopUp();
+  setAddress();
+};
+
+var mainPinMouseDownHandler = function (evt) {
+  evt.preventDefault();
+
+  var startCoords = {
+    x: evt.clientX,
+    y: evt.clientY
+  };
+
+  var mainPinMouseMoveHandler = function (moveEvt) {
+    moveEvt.preventDefault();
+
+    var mainPinY = mainPin.offsetTop + MAIN_BUTTON_HEIGHT;
+    var mainPinX = mainPin.offsetLeft + MAIN_BUTTON_WIDTH / 2;
+
+    var shift = {
+      x: startCoords.x - moveEvt.clientX,
+      y: startCoords.y - moveEvt.clientY
+    };
+
+    startCoords = {
+      x: moveEvt.clientX,
+      y: moveEvt.clientY
+    };
+
+    if ((mainPinX - shift.x <= map.offsetWidth) && (mainPinX - shift.x >= mainPin.offsetWidth)) {
+      mainPin.style.left = (mainPin.offsetLeft - shift.x) + 'px';
+    }
+    if ((mainPinY - shift.y <= BOTTOM_LIMIT) && (mainPinY - shift.y >= TOP_LIMIT)) {
+      mainPin.style.top = (mainPin.offsetTop - shift.y) + 'px';
+    }
+  };
+
+  var onMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+    setAddress();
+    document.removeEventListener('mousemove', mainPinMouseMoveHandler);
+    document.removeEventListener('mouseup', onMouseUp);
+  };
+
+  document.addEventListener('mousemove', mainPinMouseMoveHandler);
+  document.addEventListener('mouseup', onMouseUp);
+};
+
+mainPin.addEventListener('mouseup', mainPinMouseUpHandler);
+mainPin.addEventListener('mousedown', mainPinMouseDownHandler);
 
 /**
  * Функция получения координат главной метки
@@ -123,24 +185,10 @@ for (var i = 0; i < HOUSE_QUANTITY; i++) {
 }
 
 /**
- * Функция активации карты
- */
-var activateMap = function () {
-  mainPin.addEventListener('mouseup', function () {
-    map.classList.remove('map--faded');
-    noticeForm.classList.remove('notice__form--disabled');
-    createButtons();
-    removeFormDisabled();
-    setAddress();
-    openPopUp();
-  });
-};
-activateMap();
-
-/**
  * Функция добавления атрибута disabled у формы
  */
 var addFormDisabled = function () {
+  var fieldets = document.querySelectorAll('.form__element');
   for (i = 0; i < fieldets.length; i++) {
     fieldets[i].disabled = true;
   }
@@ -151,6 +199,7 @@ addFormDisabled();
  * Функция удаления атрибута disabled у формы
  */
 var removeFormDisabled = function () {
+  var fieldets = document.querySelectorAll('.form__element');
   for (i = 0; i < fieldets.length; i++) {
     fieldets[i].disabled = false;
   }
@@ -181,10 +230,13 @@ var createButtons = function () {
  * @param {object} house
  */
 var createPopUp = function (house) {
+
   var mapFilters = document.querySelector('.map__filters-container');
   var popUpTemplate = document.querySelector('template').content;
-  var popUpElement = popUpTemplate.cloneNode(true);
+  var popUpTemlateElement = popUpTemplate.querySelector('article');
+  var popUpElement = popUpTemlateElement.cloneNode(true);
 
+  popUpElement.querySelector('.popup__close').addEventListener('click', closePopUp);
   popUpElement.querySelector('h3').textContent = house.offer.title;
   popUpElement.querySelector('p small').textContent = house.offer.address;
   popUpElement.querySelector('.popup__price').innerHTML = house.offer.price + ' &#x20bd;' + ' /ночь';
@@ -193,15 +245,14 @@ var createPopUp = function (house) {
   popUpElement.querySelectorAll('p + p').textContent = 'Заезд после ' + house.offer.checkin + ', выезд до ' + house.offer.checkout;
   popUpElement.querySelectorAll('p')[4].textContent = house.description;
   popUpElement.querySelector('.popup__avatar').src = house.author.avatar;
-
   var features = popUpElement.querySelector('.popup__features');
   features.innerHTML = '';
+
   for (i = 0; i < house.offer.features.length; i++) {
     var featureLi = document.createElement('li');
     featureLi.className = 'feature feature--' + house.offer.features[i];
     features.appendChild(featureLi);
   }
-
   var pictures = popUpElement.querySelector('.popup__pictures');
   for (i = 0; i < house.offer.photos.length; i++) {
     var photoLi = document.createElement('li');
@@ -209,6 +260,8 @@ var createPopUp = function (house) {
     pictures.appendChild(photoLi);
   }
 
+  closePopUp();
+  map.addEventListener('keydown', onPopupEscPress);
   map.insertBefore(popUpElement, mapFilters);
 };
 
@@ -220,7 +273,6 @@ var onPinClickhandler = function (evt) {
   var target = evt.currentTarget;
   var offerId = target.getAttribute('data-id');
   createPopUp(houseArr[offerId]);
-  document.querySelector('.popup__close').addEventListener('click', closePopUp);
 };
 
 /**
@@ -238,5 +290,96 @@ var openPopUp = function () {
  */
 var closePopUp = function () {
   var card = document.querySelector('.map__card');
-  map.removeChild(card);
+  if (card) {
+    map.removeChild(card);
+    document.removeEventListener('keydown', onPopupEscPress);
+    map.removeEventListener('keydown', onPopupEscPress);
+  }
 };
+var onPopupEscPress = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closePopUp();
+  }
+};
+
+/**
+ * Функция валидации формы отправки
+ */
+var validateNoticeForm = function () {
+  noticeForm.setAttribute('action', 'https://js.dump.academy/keksobooking');
+  var MIN_PRICES = {
+    flat: 1000,
+    bungalo: 0,
+    house: 5000,
+    palace: 10000
+  };
+  var noticeFormType = document.querySelector('#type');
+  var noticeFormPrice = document.querySelector('#price');
+  var noticeFormTimeIn = document.querySelector('#timein');
+  var noticeFormTimeOut = document.querySelector('#timeout');
+  var noticeFormRoomNumber = document.querySelector('#room_number');
+  var noticeFormRoomCapacity = document.querySelector('#capacity');
+
+  noticeFormType.addEventListener('change', function (evt) {
+    var target = evt.target;
+    noticeFormPrice.min = MIN_PRICES[target.value];
+  });
+
+  noticeFormTimeIn.addEventListener('change', function () {
+    noticeFormTimeOut.value = noticeFormTimeIn.value;
+  });
+
+  noticeFormTimeOut.addEventListener('change', function () {
+    noticeFormTimeIn.value = noticeFormTimeOut.value;
+  });
+
+  var compareRoomsGuests = function (value) {
+    if (+value !== 100) {
+      noticeFormRoomCapacity.value = value;
+      for (i = 0; i < noticeFormRoomCapacity.options.length; i++) {
+        if (+value >= +noticeFormRoomCapacity.options[i].value && +noticeFormRoomCapacity.options[i].value !== 0) {
+          noticeFormRoomCapacity.options[i].disabled = false;
+        } else {
+          noticeFormRoomCapacity.options[i].disabled = true;
+        }
+      }
+    } else {
+      noticeFormRoomCapacity.value = '0';
+      for (i = 0; i < noticeFormRoomCapacity.options.length; i++) {
+        if (+noticeFormRoomCapacity.options[i].value > 0) {
+          noticeFormRoomCapacity.options[i].disabled = true;
+        }
+      }
+    }
+  };
+  compareRoomsGuests(noticeFormRoomNumber.value);
+
+  noticeFormPrice.addEventListener('invalid', function () {
+    if (noticeFormPrice.validity.tooLong) {
+      noticeFormPrice.setCustomValidity('Максимальное значение — 1 000 000');
+    }
+  });
+
+  noticeFormRoomNumber.addEventListener('change', function (evt) {
+    var target = evt.target;
+    compareRoomsGuests(target.value);
+  });
+};
+validateNoticeForm();
+
+/**
+ * Функция очистки формы и карты
+ */
+var resetNoticeForm = function () {
+  var resetNoticeFormButton = document.querySelector('.form__reset');
+  resetNoticeFormButton.addEventListener('click', function (evt) {
+    evt.preventDefault();
+    noticeForm.reset();
+    validateNoticeForm();
+    closePopUp();
+    mainPin.style.top = MAIN_BUTTON_START_TOP + 'px';
+    mainPin.style.left = MAIN_BUTTON_START_LEFT + '%';
+    setAddress();
+  });
+};
+resetNoticeForm();
