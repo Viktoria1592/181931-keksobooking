@@ -55,7 +55,6 @@
       bungalo: 'Бунгало',
       house: 'Дом'
     };
-
     return roomTypes[russianRoomType];
   };
 })();

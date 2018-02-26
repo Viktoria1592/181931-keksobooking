@@ -68,7 +68,6 @@
   var getMainPinCoordinates = function () {
     var x = mainPin.offsetLeft - MAIN_BUTTON_WIDTH / 2;
     var y = mainPin.offsetTop + MAIN_BUTTON_HEIGHT;
-
     return x + ', ' + y;
   };
 

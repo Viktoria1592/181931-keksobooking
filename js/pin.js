@@ -21,4 +21,3 @@
     mapPins.appendChild(buttons);
   };
 })();
-
