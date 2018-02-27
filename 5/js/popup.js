@@ -57,7 +57,7 @@
   /**
    * Функция отрисовки Popup окна по нажатию на метку
    */
-  window.openPopUp = function () {
+  var openPopUp = function () {
     var mapPin = document.querySelectorAll('.map__pin:not(.map__pin--main)');
     for (var i = 0; i < mapPin.length; i++) {
       mapPin[i].addEventListener('click', onPinClickhandler);
@@ -84,5 +84,6 @@
 
   window.popup = {
     closePopUp: closePopUp,
+    openPopUp: openPopUp
   };
 })();
