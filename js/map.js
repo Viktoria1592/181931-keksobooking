@@ -1,15 +1,21 @@
 'use strict';
 
 (function () {
+  var MAIN_BUTTON_WIDTH = 65;
+  var MAIN_BUTTON_HEIGHT = 87;
+  var TOP_LIMIT = 150;
+  var BOTTOM_LIMIT = 500;
+  var mainPin = document.querySelector('.map__pin--main');
+  var map = document.querySelector('.map');
+
   /**
    * Функция перетаскивания метки и активации карты
    */
-
   var mainPinMouseUpHandler = function () {
     map.classList.remove('map--faded');
-    noticeForm.classList.remove('notice__form--disabled');
-    createButtons();
-    removeFormDisabled();
+    window.noticeForm.classList.remove('notice__form--disabled');
+    window.pin.createButtons();
+    window.form.removeFormDisabled();
     setAddress();
     openPopUp();
     setAddress();
@@ -74,7 +80,11 @@
   /**
    * Функция добавления координат главной точки в поле адрес
    */
-  window.setAddress = function () {
-    noticeForm.querySelector('#address').value = getMainPinCoordinates();
+  var setAddress = function () {
+    window.noticeForm.querySelector('#address').value = getMainPinCoordinates();
+  };
+
+  window.map = {
+    setAddress: setAddress
   };
 })();

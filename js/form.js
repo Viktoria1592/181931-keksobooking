@@ -1,9 +1,9 @@
 'use strict';
 
-/**
- * Функция валидации формы отправки
- */
 (function () {
+  var MAIN_BUTTON_START_TOP = 375;
+  var MAIN_BUTTON_START_LEFT = 50;
+  var mainPin = document.querySelector('.map__pin--main');
   /**
    * Функция добавления атрибута disabled у формы
    */
@@ -18,15 +18,18 @@
   /**
    * Функция удаления атрибута disabled у формы
    */
-  window.removeFormDisabled = function () {
+  var removeFormDisabled = function () {
     var fieldets = document.querySelectorAll('.form__element');
     for (var i = 0; i < fieldets.length; i++) {
       fieldets[i].disabled = false;
     }
   };
 
+  /**
+   * Функция валидации формы отправки
+   */
   var validateNoticeForm = function () {
-    noticeForm.setAttribute('action', 'https://js.dump.academy/keksobooking');
+    window.noticeForm.setAttribute('action', 'https://js.dump.academy/keksobooking');
     var MIN_PRICES = {
       flat: 1000,
       bungalo: 0,
@@ -90,17 +93,29 @@
   /**
    * Функция очистки формы и карты
    */
-  var resetNoticeForm = function () {
-    var resetNoticeFormButton = document.querySelector('.form__reset');
-    resetNoticeFormButton.addEventListener('click', function (evt) {
-      evt.preventDefault();
-      noticeForm.reset();
-      validateNoticeForm();
-      closePopUp();
-      mainPin.style.top = MAIN_BUTTON_START_TOP + 'px';
-      mainPin.style.left = MAIN_BUTTON_START_LEFT + '%';
-      setAddress();
-    });
+  var resetNoticeFormButton = document.querySelector('.form__reset');
+  resetNoticeFormButton.addEventListener('click', function (evt) {
+    evt.preventDefault();
+    window.noticeForm.reset();
+    validateNoticeForm();
+    addFormDisabled();
+    window.popup.closePopUp();
+    mainPin.style.top = MAIN_BUTTON_START_TOP + 'px';
+    mainPin.style.left = MAIN_BUTTON_START_LEFT + '%';
+    window.map.setAddress();
+
+    var mapPins = document.querySelector('.map__pins');
+    var mapPin = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+    var map = document.querySelector('.map');
+    map.classList.add('map--faded');
+
+    for (var k = 0; k < mapPin.length; k++) {
+      var elem = mapPin[k];
+      mapPins.removeChild(elem);
+    }
+  });
+
+  window.form = {
+    removeFormDisabled: removeFormDisabled
   };
-  resetNoticeForm();
 })();
