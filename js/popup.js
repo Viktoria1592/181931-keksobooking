@@ -83,7 +83,7 @@
   };
 
   window.popup = {
-    closePopUp: closePopUp,
-    openPopUp: openPopUp
+    close: closePopUp,
+    open: openPopUp
   };
 })();
