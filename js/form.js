@@ -99,7 +99,7 @@
     window.noticeForm.reset();
     validateNoticeForm();
     addFormDisabled();
-    window.popup.closePopUp();
+    window.popup.close();
     mainPin.style.top = MAIN_BUTTON_START_TOP + 'px';
     mainPin.style.left = MAIN_BUTTON_START_LEFT + '%';
     window.map.setAddress();

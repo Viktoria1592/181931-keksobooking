@@ -17,7 +17,7 @@
     window.pin.createButtons();
     window.form.removeFormDisabled();
     setAddress();
-    window.popup.openPopUp();
+    window.popup.open();
     setAddress();
   };
 

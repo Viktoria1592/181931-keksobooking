@@ -1,7 +1,7 @@
 'use strict';
 (function () {
-  window.AVATAR_URL = 'img/avatars/user0';
-  window.AVATAR_TYPE = '.png';
+  var AVATAR_URL = 'img/avatars/user0';
+  var AVATAR_TYPE = '.png';
   window.HOUSE_QUANTITY = 8;
   var HOUSE_TITLE = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
   var HOUSE_TYPE = ['flat', 'house', 'bungalo'];
@@ -10,7 +10,6 @@
   var HOUSE_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
   var HOUSE_PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
 
-  window.map = document.querySelector('.map');
   window.noticeForm = document.querySelector('.notice__form');
   /**
    * Функция создания одного объекта
@@ -23,7 +22,7 @@
     var newArrOfFeatures = HOUSE_FEATURES.slice(0, window.utils.getRandomNumber(0, HOUSE_FEATURES.length));
     var house = {
       author: {
-        avatar: window.AVATAR_URL + (step + 1) + window.AVATAR_TYPE
+        avatar: AVATAR_URL + (step + 1) + AVATAR_TYPE
       },
       offer: {
         title: window.utils.getRandomItem(HOUSE_TITLE),
