@@ -4,6 +4,7 @@
   var MAIN_BUTTON_START_TOP = 375;
   var MAIN_BUTTON_START_LEFT = 50;
   var mainPin = document.querySelector('.map__pin--main');
+  var noticeForm = document.querySelector('.notice__form');
   /**
    * Функция добавления атрибута disabled у формы
    */
@@ -93,9 +94,7 @@
   /**
    * Функция очистки формы и карты
    */
-  var resetNoticeFormButton = document.querySelector('.form__reset');
-  resetNoticeFormButton.addEventListener('click', function (evt) {
-    evt.preventDefault();
+  var returnInitialPageState = function () {
     window.noticeForm.reset();
     validateNoticeForm();
     addFormDisabled();
@@ -113,6 +112,20 @@
       var elem = mapPin[k];
       mapPins.removeChild(elem);
     }
+  };
+
+
+  var resetNoticeFormButton = document.querySelector('.form__reset');
+  resetNoticeFormButton.addEventListener('click', function (evt) {
+    evt.preventDefault();
+    returnInitialPageState();
+  });
+
+
+  noticeForm.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    window.backend.upload(new FormData(noticeForm), window.backend.onError);
+    returnInitialPageState();
   });
 
   window.form = {

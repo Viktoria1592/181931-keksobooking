@@ -14,11 +14,14 @@
   var mainPinMouseUpHandler = function () {
     map.classList.remove('map--faded');
     window.noticeForm.classList.remove('notice__form--disabled');
-    window.pin.createButtons();
+    setAddress();
+    window.backend.load(getData);
     window.form.removeFormDisabled();
-    setAddress();
-    window.popup.open();
-    setAddress();
+  };
+
+  var getData = function (data) {
+    window.housesArr = data;
+    window.pin.createButtons(data);
   };
 
   var mainPinMouseDownHandler = function (evt) {
