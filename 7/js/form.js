@@ -94,34 +94,38 @@
   /**
    * Функция очистки формы и карты
    */
-  var resetNoticeForm = function () {
-    var resetNoticeFormButton = document.querySelector('.form__reset');
-    resetNoticeFormButton.addEventListener('click', function (evt) {
-      evt.preventDefault();
-      window.noticeForm.reset();
-      validateNoticeForm();
-      addFormDisabled();
-      window.popup.close();
-      mainPin.style.top = MAIN_BUTTON_START_TOP + 'px';
-      mainPin.style.left = MAIN_BUTTON_START_LEFT + '%';
-      window.map.setAddress();
+  var returnInitialPageState = function () {
+    window.noticeForm.reset();
+    validateNoticeForm();
+    addFormDisabled();
+    window.popup.close();
+    mainPin.style.top = MAIN_BUTTON_START_TOP + 'px';
+    mainPin.style.left = MAIN_BUTTON_START_LEFT + '%';
+    window.map.setAddress();
 
-      var mapPins = document.querySelector('.map__pins');
-      var mapPin = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-      var map = document.querySelector('.map');
-      map.classList.add('map--faded');
+    var mapPins = document.querySelector('.map__pins');
+    var mapPin = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+    var map = document.querySelector('.map');
+    map.classList.add('map--faded');
 
-      for (var k = 0; k < mapPin.length; k++) {
-        var elem = mapPin[k];
-        mapPins.removeChild(elem);
-      }
-    });
+    for (var k = 0; k < mapPin.length; k++) {
+      var elem = mapPin[k];
+      mapPins.removeChild(elem);
+    }
   };
+
+
+  var resetNoticeFormButton = document.querySelector('.form__reset');
+  resetNoticeFormButton.addEventListener('click', function (evt) {
+    evt.preventDefault();
+    returnInitialPageState();
+  });
+
 
   noticeForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
     window.backend.upload(new FormData(noticeForm), window.backend.onError);
-    resetNoticeForm();
+    returnInitialPageState();
   });
 
   window.form = {
