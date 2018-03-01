@@ -33,7 +33,7 @@
       features.appendChild(featureLi);
     }
     var pictures = popUpElement.querySelector('.popup__pictures');
-    for (i = 0; i < house.offer.photos.length; i++) {
+    for (i = 0; i < house[i].offer.photos.length; i++) {
       var photoLi = document.createElement('li');
       photoLi.innerHTML = '<img src="' + house.offer.photos[i] + '" width="65" height="65">';
       pictures.appendChild(photoLi);
@@ -51,7 +51,7 @@
   var onPinClickhandler = function (evt) {
     var target = evt.currentTarget;
     var offerId = target.getAttribute('data-id');
-    window.createPopUp(window.houseArr[offerId]);
+    window.createPopUp(window.pin[offerId]);
   };
 
   /**
@@ -60,7 +60,7 @@
   var openPopUp = function () {
     var mapPin = document.querySelectorAll('.map__pin:not(.map__pin--main)');
     for (var i = 0; i < mapPin.length; i++) {
-      mapPin[i].addEventListener('click', onPinClickhandler);
+      mapPin[i].addEventListener('click', window.createPopUp);
     }
   };
 

@@ -14,10 +14,10 @@
   var mainPinMouseUpHandler = function () {
     map.classList.remove('map--faded');
     window.noticeForm.classList.remove('notice__form--disabled');
-    window.pin.createButtons();
+    window.backend.load(window.pin.createButtons);
     window.form.removeFormDisabled();
     setAddress();
-    window.popup.open();
+    window.backend.load(window.createPopUp);
     setAddress();
   };
 
